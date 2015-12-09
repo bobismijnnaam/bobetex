@@ -1,0 +1,30 @@
+\documentclass{article}
+
+\makeatletter
+\DeclareRobustCommand{\BobeTeX}{%
+  B\kern-.13em%
+  {\sbox\z@ T%
+    \vbox to0.85em{\hbox{%
+      \check@mathfonts
+      \fontsize\sf@size\z@
+      \math@fontsfalse\selectfont O}%
+    \vss}%
+  }%
+  \kern-0.18em%
+  B\kern-.15em%
+  {\sbox\z@ T%
+    \vbox to0.4em {\hbox{%
+      \check@mathfonts
+      \fontsize\sf@size\z@
+      \math@fontsfalse\selectfont E}%
+    \vss}%
+  }%
+  \kern-.10em%
+  \TeX}
+\makeatother
+
+\begin{document}
+
+\huge{\BobeTeX}
+
+\end{document}
