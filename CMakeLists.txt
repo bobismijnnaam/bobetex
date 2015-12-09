@@ -7,3 +7,4 @@ CONAN_BASIC_SETUP()
 add_subdirectory("${PROJECT_SOURCE_DIR}/src")
 
 add_executable(btx ${SOURCE})
+target_link_libraries(btx ${CONAN_LIBS})

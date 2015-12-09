@@ -1,5 +1,6 @@
 conaninfo.txt
 conanbuildinfo.cmake
 build/
+bin/
 *.swp
 *~

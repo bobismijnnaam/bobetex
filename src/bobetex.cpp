@@ -1,9 +1,13 @@
 #include <string>
 #include <iostream>
+#include <SDL.h>
 
 #include "duktape.h"
 
 int main() {
+	SDL_Init(SDL_INIT_VIDEO);
+	SDL_Quit();
+
 	duk_context *ctx = NULL;
 
 	ctx = duk_create_heap_default();
