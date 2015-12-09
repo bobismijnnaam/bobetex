@@ -1,0 +1,6 @@
+set(SOURCE
+	${SOURCE}
+	${CMAKE_CURRENT_SOURCE_DIR}/bobetex.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/duktape.c
+	PARENT_SCOPE
+)
