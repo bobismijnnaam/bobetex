@@ -8,14 +8,13 @@ while(true) {
 	var e = btx.pollEvent();
 
 	if (e) {
-		print(e);
+		print(JSON.stringify(e));
+
+		if (e.quit) {
+			break;
+		}
 	}
-
-	if (e == "BTX_QUIT")
-		break;
 }
-
-print(btx);
 
 // function main() {
 // 	var counterVar = 0;
