@@ -8,124 +8,11 @@
 
 #include "duktape.h"
 #include "json.hpp"
+#include "jsapi.hpp"
+#include "utils.hpp"
+#include "globals.hpp"
 
 using json = nlohmann::json;
-
-SDL_Window *window = nullptr;
-SDL_GLContext context;
-
-// Expects from javascript: windowtitle, width, height
-duk_ret_t btx_create_window(duk_context *ctx) {
-	if (window != nullptr) {
-		duk_push_string(ctx, "window has already been created");
-		duk_throw(ctx);
-		// This call never returns
-	}
-
-	char const *buf;
-	buf = duk_require_string(ctx, 0);
-
-	int scrW, scrH;
-	scrW = duk_require_int(ctx, 1);
-	scrH = duk_require_int(ctx, 2);
-
-	window = SDL_CreateWindow(buf, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, scrW, scrH, SDL_WINDOW_OPENGL);
-
-	return 0;
-}
-
-// Expects from javascript: nothing
-duk_ret_t btx_poll_event(duk_context *ctx) {
-	SDL_Event e;
-	if (SDL_PollEvent(&e)) {
-		if (e.type == SDL_QUIT) {
-			json quitEvent = {
-				{"quit", json({})}
-			};
-
-			duk_push_string(ctx, quitEvent.dump().c_str());
-			duk_json_decode(ctx, -1);
-
-			return 1;
-		} else if (e.type == SDL_MOUSEMOTION) {
-			json motionEvent = {
-				{"motion", {
-					{"x", std::to_string(e.motion.x)},
-					{"y", std::to_string(e.motion.y)},
-					{"xrel", std::to_string(e.motion.xrel)},
-					{"yrel", std::to_string(e.motion.yrel)}
-				}}
-			};
-
-			duk_push_string(ctx, motionEvent.dump().c_str());
-			duk_json_decode(ctx, -1);
-
-			return 1;
-		} else if (e.type == SDL_MOUSEBUTTONDOWN || e.type == SDL_MOUSEBUTTONUP) {
-			std::string button = "";
-			std::string state = "";
-			std::string direction = "";
-
-			if (e.button.state == SDL_PRESSED) {
-				state = "pressed";
-			} else {
-				state = "released";
-			}
-
-			if (e.button.button == SDL_BUTTON_LEFT) {
-				button = "left";
-			} else if (e.button.button == SDL_BUTTON_RIGHT) {
-				button = "right";
-			} else {
-				button = "middle";
-			}
-
-			json buttonEvent = {
-				{"button", {
-					{"button", button},
-					{"state", state},
-					{"x", e.button.x},
-					{"y", e.button.y}		
-				}}
-			};
-
-			duk_push_string(ctx, buttonEvent.dump().c_str());
-			duk_json_decode(ctx, -1);
-			
-			return 1;
-		} else if (e.type == SDL_KEYDOWN  || e.type == SDL_KEYUP) {
-			std::string state = "";
-			if (e.key.state == SDL_PRESSED) {
-				state = "pressed";
-			} else {
-				state = "released";
-			}
-
-			std::string keyName(SDL_GetKeyName(e.key.keysym.sym));
-			std::transform(keyName.begin(), keyName.end(), keyName.begin(), ::tolower);
-
-			json keyEvent = {
-				{"key", {
-					{"state", state},
-					{"name", keyName}
-				}}
-			};
-
-			duk_push_string(ctx, keyEvent.dump().c_str());
-			duk_json_decode(ctx, -1);
-			
-			return 1;
-		}
-	}
-
-	return 0;
-}
-
-duk_ret_t btx_sanity(duk_context *ctx) {
-	std::cout << "Donkey poo.\n";
-
-	return 0;
-}
 
 int main() {
 	// Set up SDL & OpenGL
@@ -134,8 +21,6 @@ int main() {
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
-
-	context = SDL_GL_CreateContext(window);
 
 	// Initialize Duktape
 	duk_context *ctx = NULL;
@@ -152,9 +37,21 @@ int main() {
 	duk_idx_t id = duk_push_object(ctx);
 
 	duk_function_list_entry const btx_generic_funcs[] = {
+		{"flip", btx_flip, 0},
+		{"triangle", btx_triangle, 6},
+		{"triangleColor", btx_triangle_color, 3},
+		{"tricolorTriangle", btx_tricolor_triangle, 15},
+		{"rect", btx_rect, 4},
+		{"quad", btx_quad, 8},
+		{"setClearColor", btx_set_clear_color, 3},
 		{"createWindow", btx_create_window, 3},
 		{"pollEvent", btx_poll_event, 0},
 		{"sanity", btx_sanity, 0},
+		{"getTicks", btx_get_ticks, 0},
+		{"delay", btx_delay, 1},
+		{"include", btx_include, 1},
+		{"randrange", btx_randrange, 2},
+		{"uniform", btx_uniform, 0},
 		{NULL, NULL, 0}
 	};
 	duk_put_function_list(ctx, id, btx_generic_funcs);

@@ -13,6 +13,7 @@ add_subdirectory("${PROJECT_SOURCE_DIR}/src")
 add_executable(btx ${SOURCE})
 target_link_libraries(btx GL ${CONAN_LIBS})
 include_directories("${PROJECT_SOURCE_DIR}/src")
+set(CMAKE_BUILD_TYPE Debug)
 
 # Indicate that GLEW should be linked statically
 add_definitions(-DGLEW_STATIC)
