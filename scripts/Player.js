@@ -1,6 +1,6 @@
 function SimpleWand() {
-	this.wand = true;
-	this.recoverTime = 2000;
+	this.recoverTime = 1000;
+	this.lastUse = -99999;
 }
 
 SimpleWand.prototype.getPatches = function(field, x, y) {
@@ -8,6 +8,28 @@ SimpleWand.prototype.getPatches = function(field, x, y) {
 		return [[x, y]];
 
 	return [];
+}
+
+function CrossWand() {
+	this.recoverTime = 2000;
+	this.lastUse = -99999;
+}
+
+CrossWand.prototype.getPatches = function(field, x, y) {
+	var patches = [
+		[x, y],
+		[x, y + 1],
+		[x + 1, y],
+		[x, y - 1],
+		[x - 1, y]
+	]
+
+	var passes = function(patch) {
+		return patch[0] >= 0 && patch[0] < field.width &&
+			patch[1] >= 0 && patch[1] < field.height;
+	}
+
+	return patches.filter(passes);
 }
 
 function Player() {
@@ -27,7 +49,11 @@ function Player() {
 
 	this.wand = new SimpleWand();
 	this.plantSomething = false;
-	this.lastPlant = 0;
+	
+	this.sugars = 0;
+
+	this.hasCollided = false;
+	this.isFrozen = false;
 };
 
 Player.prototype.render = function(view, debug) {
@@ -45,7 +71,7 @@ Player.prototype.render = function(view, debug) {
 Player.prototype.event = function(e) {
 	if (!e) return;
 
-	if (e.key) {
+	if (e.key && !this.isFrozen) {
 		var dirs = ["left", "up", "right", "down"];
 
 		if (dirs.indexOf(e.key.name) > -1) {
@@ -106,6 +132,8 @@ Player.prototype.logic = function(field) {
 	var leftCol = Math.floor(bb.l / field.groundWidth);
 	var rightCol = Math.floor(bb.r / field.groundWidth);
 
+	this.hasCollided = false;
+
 	if (this.vx > 0) {
 		var tr = field.patches[rightCol][topRow].bb;
 		var br = field.patches[rightCol][botRow].bb;
@@ -113,6 +141,8 @@ Player.prototype.logic = function(field) {
 		if (tr || br) {
 			bb.r = rightCol * field.groundWidth - 1;
 			bb.l = bb.r - this.w;
+
+			this.hasCollided = true;
 		}
 	} else if (this.vx < 0) {
 		var tl = field.patches[leftCol][topRow].bb;
@@ -121,6 +151,8 @@ Player.prototype.logic = function(field) {
 		if (tl || bl) {
 			bb.l = (leftCol + 1 ) * field.groundWidth;
 			bb.r = bb.l + this.w;
+
+			this.hasCollided = true;
 		}
 	}
 
@@ -151,6 +183,8 @@ Player.prototype.logic = function(field) {
 		if (tl || tr) {
 			bb.t = topRow * field.groundHeight - 1;
 			bb.b = bb.t - this.h;
+
+			this.hasCollided = true;
 		}
 	} else if (this.vy < 0) {
 		var bl = field.patches[leftCol][botRow].bb;
@@ -159,6 +193,8 @@ Player.prototype.logic = function(field) {
 		if (bl || br) {
 			bb.b = topRow * field.groundHeight;
 			bb.t = bb.b + this.h;
+
+			this.hasCollided = true;
 		}
 	}
 
@@ -174,21 +210,32 @@ Player.prototype.logic = function(field) {
 	var patchX = Math.floor(this.x / field.groundWidth);
 	var patchY = Math.floor(this.y / field.groundHeight);
 	
-	var timeSinceLastPlant = btx.getTicks() - this.lastPlant;
+	var timeSinceLastUse = btx.getTicks() - this.wand.lastUse;
 
-	if (this.plantSomething && timeSinceLastPlant >= this.wand.recoverTime) {
+	if (this.plantSomething && timeSinceLastUse >= this.wand.recoverTime) {
 		var patches = this.wand.getPatches(field, patchX, patchY);
 		
 		for (var i = 0; i < patches.length; i++) {
 			field.plant(patches[i][0], patches[i][1]);
 		}
 
-		this.lastPlant = btx.getTicks();
+		this.wand.lastUse = btx.getTicks();
 	}
 
 	this.plantSomething = false;
 
 	var possibleCells = [[leftCol, botRow], [leftCol, topRow], [rightCol, topRow], [rightCol, botRow]];
-	var sugars = field.takeGrownSeeds(possibleCells);
+	this.sugars += field.takeGrownSeeds(possibleCells);
 }
 
+Player.prototype.freeze = function() {
+	this.isFrozen = true;
+	this.up = false;
+	this.down = false;
+	this.left = false;
+	this.right = false;
+}
+
+Player.prototype.unfreeze = function() {
+	this.isFrozen = false;
+}

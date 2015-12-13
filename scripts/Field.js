@@ -101,7 +101,6 @@ Field.prototype.takeGrownSeeds = function(possiblePatches) {
 
 		if (this.patches[x][y].seed) {
 			if (btx.getTicks() - this.patches[x][y].seed.plantTime >= SEED_TIME) {
-				print("Seed finished on:", x, y);
 				total += 1;			
 				delete this.patches[x][y].seed;
 				this.patches[x][y].pickedUp = btx.getTicks();

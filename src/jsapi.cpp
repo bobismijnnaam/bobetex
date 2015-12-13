@@ -204,7 +204,7 @@ duk_ret_t btx_poll_event(duk_context *ctx) {
 					{"button", button},
 					{"state", state},
 					{"x", e.button.x},
-					{"y", e.button.y}		
+					{"y", SCR_H - e.button.y}		
 				}}
 			};
 

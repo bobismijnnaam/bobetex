@@ -1,7 +1,16 @@
+// Todo:
+// Shop menu
+// Buy better wand (meer wands)
+// Wand selection
+// "Statics"
+// Mouse pointer oogst
+
 btx.include("sanity.js"); sanity();
 btx.include("utils.js");
 btx.include("Field.js");
 btx.include("Player.js");
+btx.include("Hud.js");
+btx.include("Shop.js");
 
 var SCR_W = 800;
 var SCR_H = 600;
@@ -20,6 +29,8 @@ print(btx.randrange(0, 5));
 
 player = new Player();
 field = new Field();
+hud = new Hud();
+shop = new Shop();
 
 // Create grey landing plane
 for (var x = 0; x < 4; x++) {
@@ -60,21 +71,32 @@ while(playGame) {
 		} else if (e.key) {
 			if (e.key.name == "escape") {
 				playGame = false;
+			} else if (e.key.name == "o") {
+				if (e.key.state == "released") {
+					player.sugars += 500;
+				}
 			}
 		} else if (e.motion) {
 			mx = e.motion.x;
 			my = e.motion.y;
 		}
 
-		player.event(e)
+		player.event(e);
+		shop.event(e);
 	}
 
 	player.logic(field);
+	shop.logic(player);
 
 	view = adjustViewToPlayer(view, player, 0.1);
 
 	field.render(view);
 	player.render(view);
+
+	if (!shop.isVisible)
+		hud.render(player, field);
+
+	shop.render();
 
 	btx.flip();
 }

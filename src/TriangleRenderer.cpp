@@ -86,7 +86,7 @@ void TriangleRenderer::render() {
 
 	glBindVertexArray(vao);
 	glUseProgram(shaderProgram);
-	glDrawArrays(GL_TRIANGLES, 0, floats.size() / 2);
+	glDrawArrays(GL_TRIANGLES, 0, floats.size() / 5);
 
 	floats.clear();
 }
