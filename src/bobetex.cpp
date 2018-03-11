@@ -14,7 +14,7 @@
 
 using json = nlohmann::json;
 
-int main() {
+int main(int argc, char* argv[]) {
 	// Set up SDL & OpenGL
 	SDL_Init(SDL_INIT_VIDEO);
 
