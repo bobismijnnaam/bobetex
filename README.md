@@ -32,4 +32,12 @@ make
 ```
 
 ### Windows
-To be decided.
+```bash
+# Make a build directory
+cd build
+cmake .. -G "Visual Studio 14 2015 Win64"
+```
+
+Then open the solution in your visual studio and build it!
+
+It seems that the version you choose depends on the VS that you have available; I only tested with visual studi 2015 community edition. The most important part is that you type the Win64 part, since that SDL library (the x64 one) is hardcoded in the CMakeLists.txt. This is easily changed though.
