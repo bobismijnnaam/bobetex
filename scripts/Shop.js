@@ -11,7 +11,7 @@ function Shop() {
 
 	// move speed
 	var mov = this.products[0];
-	mov.cost = 10;
+	mov.cost = 1;
 	mov.acquired = 0;
 	mov.max = 4;
 	mov.buy = function(player, field) {
@@ -19,7 +19,7 @@ function Shop() {
 			return false;
 
 		player.sugars -= mov.cost;
-		mov.cost += 50;
+		// mov.cost += 50;
 		mov.acquired += 1;
 		player.speed += 20;
 
@@ -28,7 +28,7 @@ function Shop() {
 
 	// grow speed
 	var speed = this.products[1];
-	speed.cost = 100;
+	speed.cost = 1;
 	speed.acquired = 0;
 	speed.max = 4;
 	speed.buy = function(player, field) {
@@ -37,7 +37,7 @@ function Shop() {
 		}
 		
 		player.sugars -= speed.cost;
-		speed.cost += 200;
+		// speed.cost += 200;
 		speed.acquired += 1;
 		SEED_TIME -= 3 * 1000;
 
@@ -46,14 +46,14 @@ function Shop() {
 
 	// planting behaviour
 	var plant = this.products[2];
-	plant.cost = 1000;
+	plant.cost = 1;
 	plant.acquired = 0;
 	plant.max = 4;
 	plant.buy = function(player, field) {
 		if (plant.acquired == 0 && plant.cost <= player.sugars) {
 			player.wand = new CrossWand();
 			plant.acquired += 1;
-			plant.cost += 1000;
+			// plant.cost += 1000;
 			return true;
 		}
 
@@ -62,7 +62,7 @@ function Shop() {
 
 	// statics
 	var stat = this.products[3];
-	stat.cost = 10000;
+	stat.cost = 10;
 	stat.acquired = 0;
 	stat.max = 100;
 	stat.buy = function(player, field) {

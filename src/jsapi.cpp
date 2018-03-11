@@ -140,11 +140,24 @@ duk_ret_t btx_create_window(duk_context *ctx) {
 
 	window = SDL_CreateWindow(buf, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCR_W, SCR_H, SDL_WINDOW_OPENGL);
 
+    if(window == nullptr) {
+        printf("Window could not be created! SDL Error: %s\n", SDL_GetError() );
+    }
+
 	// Init OpenGL stuff after creation of window
 	context = SDL_GL_CreateContext(window);
 
+    if(context == nullptr) {
+        printf("OpenGL context could not be created! SDL Error: %s\n", SDL_GetError() );
+    }
+
 	glewExperimental = GL_TRUE;
-	glewInit();
+	auto ret = glewInit();
+    if (ret != GLEW_OK) {
+        std::cout << "GLEW_OK: " << GLEW_OK << "\n";
+        std::cout << "glewInit did not return GLEW_OK! It returned: " << ret << "\n";
+        std::cout << "GLEW Error: " << glewGetErrorString(ret) << std::endl;
+    }
 
 	glGetError();
 
