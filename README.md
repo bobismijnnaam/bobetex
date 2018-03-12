@@ -18,10 +18,30 @@ In the shop the following items can be bought from left to right:
 
 Every item costs only one sugar, so you should have no problem farming enough to improve planting performance.
 
+## Running
+
+### Linux
+Doubleclick the executable in the dist directory! You might have to install the libsdl2 runtime, something like
+
+```bash
+sudo apt install libsdl2-2.0-0
+```
+
+### Windows
+Doubleclick the executable in the dist directory! There should not be anything else needed, except for maybe the visual C++ runtime:
+
+[https://www.microsoft.com/en-us/download/details.aspx?id=48145]()
+
 ## Building
 
 ### Linux
-Make sure you have SDL2 installed. Assumed path is `/usr/include/SDL2` for headers. libSDL2.a is assumed to be in path.
+Make sure you have SDL2 installed. For ubuntu:
+
+```bash
+sudo apt install libsdl2-dev
+```
+
+ Assumed path is `/usr/include/SDL2` for headers. libSDL2.a is assumed to be in path.
 
 Then:
 
